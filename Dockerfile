@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ENV PATH="/root/.cargo/bin:/toolchains/mingw-w64-toolchain-9.2.0-linux-x86_64/mingw-w64-x86_64/bin:$PATH"
+ENV PATH="/root/.cargo/bin:/toolchains/mingw-w64-x86_64/bin:$PATH"
 WORKDIR /
 
 # rust
@@ -13,14 +13,15 @@ RUN \
 
 # mingw toolchain
 RUN \
-       apt install -y wget \
+       apt install -y wget bison flex m4 pax \
     && mkdir toolchains \
-    && wget https://github.com/bradleysepos/mingw-w64-build/releases/download/9.2.0/mingw-w64-toolchain-9.2.0-linux-x86_64.tar.gz \
-    && tar xzf mingw-w64-toolchain-9.2.0-linux-x86_64.tar.gz -C toolchains \
-    && rm mingw-w64-toolchain-9.2.0-linux-x86_64.tar.gz
+    && wget https://raw.githubusercontent.com/HandBrake/HandBrake/master/scripts/mingw-w64-build \
+    && chmod +x mingw-w64-build \
+    && ./mingw-w64-build x86_64 toolchains \
+    && rm mingw-w64-build
 
 # handbrake build
-RUN apt install -y git python3 m4 autoconf libtool-bin meson nasm cmake clang
+RUN apt install -y git python3 autoconf libtool-bin meson nasm cmake clang
 
 COPY build-handbrake.sh .
 
